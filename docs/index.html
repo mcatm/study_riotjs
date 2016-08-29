@@ -4,6 +4,9 @@
     <meta charset="utf-8" />
     <title>RiotJS Test</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <style>
+    a { cursor: pointer }
+    </style>
   </head>
   <body>
     <!-- カスタムタグ -->
@@ -21,11 +24,13 @@
     <script type="riot/tag">
       <app>
         <h1>エンジニアチーム</h1>
-        <ul each='{ members }'>
-          <li>
+        <ul>
+          <li each={ members } if={ active }>
             <h2>{ name }<small>（{ job }）</small></h2>
           </li>
         </ul>
+        <hr>
+        Filter: <a onclick="{ filter }">All</a> - <a onclick="{ filter }" data-job="Backend">Backend</a> - <a onclick="{ filter }" data-job="Frontend">Frontend</a>
         <hr>
         <form onsubmit="{ add_member }">
           <div class="form-group">
@@ -48,16 +53,27 @@
       var _this = this
 
       _this.members = [
-        { name: '濱田', job: 'Backend' },
-        { name: '青木', job: 'Frontend' },
-        { name: '二階', job: 'Backend' },
-        { name: '大石', job: 'Frontend' },
-        { name: '宇根', job: 'Backend' },
-        { name: '伊藤', job: 'Frontend' },
+        { name: '濱田', job: 'Backend', active: true },
+        { name: '青木', job: 'Frontend', active: true },
+        { name: '二階', job: 'Backend', active: true },
+        { name: '大石', job: 'Frontend', active: true },
+        { name: '宇根', job: 'Backend', active: true },
+        { name: '伊藤', job: 'Frontend', active: true },
       ]
 
       this.add_member = function(e) {
-        _this.members.push( { name: this.name.value, job: this.job.value } );
+        _this.members.push( {
+          name: this.name.value,
+          job:  this.job.value,
+          active: true,
+        } )
+      }
+
+      this.filter = function(e) {
+        var job = $(e.target).data('job')
+        _this.members.map(function(member) {
+          member.active = member.job == job || !job
+        })
       }
 
     </script>
@@ -65,6 +81,8 @@
     <script>
       // マウント
       riot.mount('app');
+
+
     </script>
   </body>
 </html>

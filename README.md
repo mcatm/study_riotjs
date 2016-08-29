@@ -61,15 +61,15 @@ _this.members = [
 ```html
 <app>
   <h1>エンジニアチーム</h1>
-  <ul each='{ members }'>
-    <li>
+  <ul>
+    <li each='{ members }'>
       <h2>{ name }<small>（{ job }）</small></h2>
     </li>
   </ul>
 </app>
 ```
 
-### 1-3. アクション
+### 1-3. イベントハンドラ
 
 - フォームを作る
 
@@ -100,7 +100,7 @@ _this.members = [
       ]
 
       this.add_member = function(e) {
-        _this.members.push( { name: this.name.value, job: this.job.value } );
+        _this.members.push( { name: this.name.value, job: this.job.value, active: true } );
       }
 </app>
 ```
@@ -109,6 +109,17 @@ _this.members = [
  
 ```js
 this.add_member = function(e) {
-  _this.members.push( { name: this.name.value, job: this.job.value } );
+  _this.members.push( { name: this.name.value, job: this.job.value, active: true } );
  }
 ```
+
+---
+
+## 2. ルーティング
+
+### 2-1. ルートの設定
+
+#### 実装
+
+
+
