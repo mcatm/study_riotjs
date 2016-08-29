@@ -120,16 +120,7 @@
         var _this = this
             page = 1;
 
-        $.ajax({
-          url: 'https://job.cinra.net/api/get/?pg=' + page,
-          dataType: 'json'
-        }).done(function(m) {
-          _this.companies = m.companies
-          _this.pagination = m.pagination
-          $('.loading').fadeOut(800, function(e) {
-            _this.update()
-          })
-        });
+        receiver.trigger('get', _this);
 
       </top>
 
@@ -191,9 +182,19 @@
       <nav>
         <h2>Navigation</h2>
         <ul class="list-group">
-          <li class="list-group-item"><a href="#">Top</a></li>
-          <li class="list-group-item"><a href="#members">Members</a></li>
+          <li each={ navs } class="list-group-item"><a href="#{ uri }">{ label }</a></li>
         </ul>
+
+        this.navs = [
+          {
+            label: 'Top',
+            uri: '',
+          },
+          {
+            label: 'Members',
+            uri: 'members',
+          }
+        ]
       </nav>
 
     </script>
@@ -211,6 +212,37 @@
       })
 
       riot.route.start(true)
+
+      // Observable
+
+      function Receiver() {
+
+        // Receiverインスタンスを監視
+        riot.observable(this)
+
+        // 'get'イベントの監視
+        this.on('get', function(_this) {
+
+          var page = page ? page : 1
+
+          $.ajax({
+            url: 'https://job.cinra.net/api/get/?pg=' + page,
+            dataType: 'json'
+          }).done(function(m) {
+            _this.companies = m.companies
+            _this.pagination = m.pagination
+            $('.loading').fadeOut(800, function(e) {
+              _this.update()
+            })
+          });
+        })
+
+      }
+
+      // インスタンスを作る
+      var receiver = new Receiver()
+
+
     </script>
   </body>
 </html>
