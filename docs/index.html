@@ -6,6 +6,90 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <style>
     a { cursor: pointer }
+
+.loading
+{
+  display:block;
+  position:absolute;
+  margin:30px 0 0 100px;
+  width:80px;
+  height:80px;
+}
+.loading #outerCircle
+{
+  display:block;
+  position:absolute;
+  margin:0 auto;
+
+  width:80px;
+  height:80px;
+  border-top:7px solid #06F;
+  border-bottom:7px solid #06F;
+  border-left:7px solid transparent;
+  border-right:7px solid transparent;
+
+  border-radius:80px;
+  -moz-border-radius:80px;
+  -webkit-border-radius:80px;
+  -ms-border-radius:80px;
+  -o-border-radius:80px;
+
+  box-shadow:0 0 20px #06F;
+  -mozbox-shadow:0 0 20px #06F;
+  -ms-box-shadow:0 0 20px #06F;
+  -o-box-shadow:0 0 20px #06F;
+  -webkit-box-shadow:0 0 20px #06F;
+
+  -webkit-animation: cwSpin 1s linear .2s infinite;
+  -moz-animation: cwSpin .666s linear .2s infinite;
+  -o-animation: cwSpin .666s linear .2s infinite;
+  -ms-animation: cwSpin .666s linear .2s infinite;
+  animation: cwSpin .666s linear .2s infinite;
+
+  box-shadow:none;
+  -moz-box-shadow:none;
+  -ms-box-shadow:none;
+  -o-box-shadow:none;
+  -webkit-box-shadow:none;
+
+  border-top:7px solid transparent;
+  border-bottom:7px solid #06F;
+  border-left:7px solid #06F;
+  border-right:7px solid transparent;
+
+  -webkit-animation: cwSpin 1s linear .2s infinite;
+  -moz-animation: cwSpin .666s linear .2s infinite;
+  -o-animation: cwSpin .666s linear .2s infinite;
+  -ms-animation: cwSpin .666s linear .2s infinite;
+  animation: cwSpin .666s linear .2s infinite;
+}
+
+
+@-webkit-keyframes cwSpin
+{
+  0%{-webkit-transform:rotate(0deg);  }
+  100%{-webkit-transform:rotate(360deg); }
+}
+@-moz-keyframes cwSpin
+{
+  0%{-moz-transform:rotate(0deg); }
+  100%{-moz-transform:rotate(360deg); }
+}
+@-ms-keyframes cwSpin
+{
+  0%{-ms-transform:rotate(0deg);  }
+  100%{-ms-transform:rotate(360deg); }
+}
+@-o-keyframes cwSpin
+{
+  0%{-o-transform:rotate(0deg); }
+  100%{-o-transform:rotate(360deg); }
+}
+@keyframes cwSpin
+{
+  0%{transform:rotate(0deg);  }
+  100%{transform:rotate(360deg); }
+}
     </style>
   </head>
   <body>
@@ -15,6 +99,9 @@
         <div class="col-xs-8">
           <app></app>
         </div>
+        <div class="col-xs-4">
+          <nav></nav>
+        </div>
       </div>
     </div>
 
@@ -22,7 +109,31 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
     <script type="riot/tag">
-      <app>
+      <top>
+        <h1>TOP</h1>
+        <span class="loading"><span id="outerCircle"></span></span>
+        <div each='{ companies }'>
+          <h2><a href="{ permalink }" target="_blank">{ title }</a></h2>
+          <p>{ job }</p>
+        </div>
+
+        var _this = this
+            page = 1;
+
+        $.ajax({
+          url: 'https://job.cinra.net/api/get/?pg=' + page,
+          dataType: 'json'
+        }).done(function(m) {
+          _this.companies = m.companies
+          _this.pagination = m.pagination
+          $('.loading').fadeOut(800, function(e) {
+            _this.update()
+          })
+        });
+
+      </top>
+
+      <members>
         <h1>エンジニアチーム</h1>
         <ul>
           <li each={ members } if={ active }>
@@ -48,41 +159,58 @@
             <button class="btn btn-default">追加する</button>
           </div>
         </form>
-      </app>
 
-      var _this = this
+        var _this = this
 
-      _this.members = [
-        { name: '濱田', job: 'Backend', active: true },
-        { name: '青木', job: 'Frontend', active: true },
-        { name: '二階', job: 'Backend', active: true },
-        { name: '大石', job: 'Frontend', active: true },
-        { name: '宇根', job: 'Backend', active: true },
-        { name: '伊藤', job: 'Frontend', active: true },
-      ]
+        _this.members = [
+          { name: '濱田', job: 'Backend', active: true },
+          { name: '青木', job: 'Frontend', active: true },
+          { name: '二階', job: 'Backend', active: true },
+          { name: '大石', job: 'Frontend', active: true },
+          { name: '宇根', job: 'Backend', active: true },
+          { name: '伊藤', job: 'Frontend', active: true },
+        ]
 
-      this.add_member = function(e) {
-        _this.members.push( {
-          name: this.name.value,
-          job:  this.job.value,
-          active: true,
-        } )
-      }
+        this.add_member = function(e) {
+          _this.members.push( {
+            name: this.name.value,
+            job:  this.job.value,
+            active: true,
+          } )
+        }
 
-      this.filter = function(e) {
-        var job = $(e.target).data('job')
-        _this.members.map(function(member) {
-          member.active = member.job == job || !job
-        })
-      }
+        this.filter = function(e) {
+          var job = $(e.target).data('job')
+          _this.members.map(function(member) {
+            member.active = member.job == job || !job
+          })
+        }
+
+      </members>
+
+      <nav>
+        <h2>Navigation</h2>
+        <ul class="list-group">
+          <li class="list-group-item"><a href="#">Top</a></li>
+          <li class="list-group-item"><a href="#members">Members</a></li>
+        </ul>
+      </nav>
 
     </script>
 
     <script>
       // マウント
-      riot.mount('app');
+      riot.mount('nav');
 
+      riot.route('', function() {
+        riot.mount('app', 'top')
+      })
 
+      riot.route('members', function() {
+        riot.mount('app', 'members')
+      })
+
+      riot.route.start(true)
     </script>
   </body>
 </html>
