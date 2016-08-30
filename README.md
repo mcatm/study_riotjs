@@ -2,6 +2,17 @@
 
 ## 0. 概要
 
+> A React-like user interface micro-library
+
+- Javascript製の**UIライブラリ**
+- 「カスタムタグ」「ルーティング」「オブザーバブル」という三つの機能（と付属機能）しか持たない
+- 故に軽い（React.jsが44.32KB／Polymerが45.69KB／Riot.jsが9.38KB）
+- WEBコンポーネントの抽象化レイヤー（DOMに対するjQueryが目標）
+
+### 0-1. どんなものができるか
+
+https://mcatm.github.io/study_riotjs/finish.html
+
 ---
 
 ## 1. カスタムタグ
@@ -9,6 +20,32 @@
 ### 1-1. カスタムタグ
 
 #### カスタムタグとは？
+
+#### 最小のカスタムタグ実装
+
+```html
+<app/>
+```
+
+- タグを自由に指定できる
+
+```js
+<script type="riot/tag">
+<app>
+<h1>APPタグ</h1>
+</app>
+</script>
+```
+
+- `riot/tag`という独自DSL（domain-specific language）を使用する
+	- 裏側で、riot.jsが、`riot/tag`をピュアなJSにコンパイルする
+
+```js
+<script>riot.mount('app')</script>
+```
+
+- カスタムタグをマウントする
+- `riot.mount('*')`で、全てのカスタムタグをマウントすることが出来る
 
 #### コーディングポリシー
 
@@ -236,13 +273,11 @@ riot.route('', function() {
 ```
 
 - riot.routeを有効にする
+  - リロードしてみると、トップページが表示されるはず
 
 ```js
 riot.route.start(true)
 ```
-
-**確認**  
-- リロードしてみると、トップページが表示されるはず
 
 - Membersページを追加
 
@@ -252,7 +287,7 @@ riot.route('members', function() {
 })
 ```
 
-**確認**
+#### 確認
 - `#members`に遷移すると、先ほどのエンジニアチームのメンバー表が表示される
 - `#`に遷移すると、先ほどのトップページが表示される
 
@@ -314,4 +349,9 @@ this.on('get', function(_this) {
 var receiver = new Receiver()
 ```
 
+---
 
+### 参考URL
+
+- [Riot\.js — A React\-like user interface micro\-library · Riot\.js](http://riotjs.com/ja/)
+- [Riot\.js 触ってみたメモとサンプル \| WebTecNote](http://tenderfeel.xsrv.jp/javascript/2220/)
