@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>RiotJS Boilerplate</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/riot/2.3.18/riot+compiler.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  </head>
+  <body>
+    <!-- カスタムタグ -->
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-8">
+          <app></app>
+        </div>
+        <div class="col-xs-4">
+          <nav></nav>
+        </div>
+      </div>
+    </div>
+
+    <script type="riot/tag">
+      <app>
+        <h1>エンジニアチーム</h1>
+        <ul>
+          <li each='{ members }'>
+            <h2>{ name }<small>（{ job }）</small></h2>
+          </li>
+        </ul>
+
+        this.members = [
+          { name: '濱田', job: 'Backend' },
+          { name: '青木', job: 'Frontend' },
+          { name: '二階', job: 'Backend' },
+          { name: '大石', job: 'Frontend' },
+          { name: '宇根', job: 'Backend' },
+          { name: '伊藤', job: 'Frontend' },
+        ]
+      </app>
+    </script>
+
+    <script>
+      riot.mount('app');
+    </script>
+  </body>
+</html>

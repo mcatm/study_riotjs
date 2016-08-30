@@ -5,6 +5,8 @@
 > A React-like user interface micro-library
 
 - Javascript製の**UIライブラリ**
+	- Javascript製MVCライブラリ（Backbone.jsやAngularJSなど）や、React.jsなどといったWEBアプリケーション作成ライブラリの一つ
+	- SPA（single page application）を作るのに適している
 - 「カスタムタグ」「ルーティング」「オブザーバブル」という三つの機能（と付属機能）しか持たない
 - 故に軽い（React.jsが44.32KB／Polymerが45.69KB／Riot.jsが9.38KB）
 - WEBコンポーネントの抽象化レイヤー（DOMに対するjQueryが目標）
@@ -12,6 +14,13 @@
 ### 0-1. どんなものができるか
 
 https://mcatm.github.io/study_riotjs/finish.html
+
+- TOPでは、CINRA.JOBの会社リストを取得
+- MEMBERSでは、エンジニアチームのメンバー一覧を表示
+	- バックエンド／フロントエンドで絞り込みできる
+	- 画面最下部のフォームから、本物の部長を追加できる
+- 画面遷移が非同期（ハッシュリンクだから当たり前だけれども…）
+- 戻る／進むボタンが機能していることを確認できる
 
 ---
 
@@ -21,29 +30,30 @@ https://mcatm.github.io/study_riotjs/finish.html
 
 #### カスタムタグとは？
 
+- HTMLタグの拡張で、自由なタグを定義できる
+	- アプリケーションのビューにあたる
+	- テンプレートとして実装することも可能
+- レイアウト（HTML）とロジック（Javascript）の組み合わせ
+- Cofeescriptなどのプリプロセッサや、Jadeなどのテンプレート言語を使うことも可能（まだ試してない）
+- CSSも書ける。カスタムタグ内にスコープされるので、完全に切り分けられる
+
 #### 最小のカスタムタグ実装
 
 ```html
 <app/>
-```
 
-- タグを自由に指定できる
-
-```js
 <script type="riot/tag">
 <app>
 <h1>APPタグ</h1>
 </app>
 </script>
-```
 
-- `riot/tag`という独自DSL（domain-specific language）を使用する
-	- 裏側で、riot.jsが、`riot/tag`をピュアなJSにコンパイルする
-
-```js
 <script>riot.mount('app')</script>
 ```
 
+- タグは自由に指定できる
+- `riot/tag`という独自DSL（domain-specific language）を使用する
+	- 裏側で、riot.jsが、`riot/tag`をピュアなJSにコンパイルする
 - カスタムタグをマウントする
 - `riot.mount('*')`で、全てのカスタムタグをマウントすることが出来る
 
@@ -53,6 +63,9 @@ https://mcatm.github.io/study_riotjs/finish.html
 	- 「あってもいいけど、公式では取り込まないよ」
 
 #### 実装
+
+- 【注意】**/boilarplate.html**を複製してから、**index.html**に名称変更して作業してください。
+- HTMLにカスタムタグが二つ（`app`と`nav`）記述してあることを確認してください
 
 - カスタムタグ「app」を定義する
 	- `<script>`のtypeが`riot/tag`であることに注意する
@@ -77,23 +90,8 @@ riot.mount('app');
 
 #### 実装
 
-- データを作成する
-- `this`がカスタムタグ自身を示すスコープ
-
-```json
-var _this = this
-
-_this.members = [
-	{ name: '濱田', job: 'Backend' },
-	{ name: '青木', job: 'Frontend' },
-	{ name: '二階', job: 'Backend' },
-	{ name: '大石', job: 'Frontend' },
-	{ name: '宇根', job: 'Backend' },
-	{ name: '伊藤', job: 'Frontend' },
-]
-```
-
 - ループを作成する
+	- `each`: 配列を与えるとループする。子要素の中で、配列のプロパティにアクセスできる
 
 ```html
 <app>
@@ -106,9 +104,35 @@ _this.members = [
 </app>
 ```
 
+- データを作成する
+- `this`がカスタムタグ自身を示すスコープ
+
+```json
+  <h1>エンジニアチーム</h1>
+  <ul>
+    （中略）
+  </ul>
+  
+  this.members = [
+		{ name: '濱田', job: 'Backend' },
+		{ name: '青木', job: 'Frontend' },
+		{ name: '二階', job: 'Backend' },
+		{ name: '大石', job: 'Frontend' },
+		{ name: '宇根', job: 'Backend' },
+		{ name: '伊藤', job: 'Frontend' },
+	]
+</app>
+```
+
+- ループが確認できるはず
+
 ### 1-3. イベントハンドラ
 
 - フォームを作る
+	- `onsubmit`：`<form>`が送信された時に走るイベントを定義
+		- 古式ゆかしいイベント記法ですが、riot.jsが上手いこと処理してくれます
+		- `preventDefault()`不要。riot.jsが勝手にやってくれる
+		- `onclick`とかも同様に書けます
 
 ```html
 <app>
@@ -129,25 +153,19 @@ _this.members = [
       <button class="btn btn-default">追加する</button>
     </div>
   </form>
-  
-  var _this = this
-
-      _this.members = [
-        （中略）
-      ]
-
-      this.add_member = function(e) {
-        _this.members.push( { name: this.name.value, job: this.job.value, active: true } );
-      }
-</app>
+  （省略）
 ```
- 
-- `<form onsubmit="{ add_member }">`
- 
-```js
-this.add_member = function(e) {
-  _this.members.push( { name: this.name.value, job: this.job.value, active: true } );
- }
+
+- `onsubmit`イベントの処理を定義する
+
+```
+<app>
+  （中略）
+
+  this.add_member = function(e) {
+    this.members.push( { name: this.name.value, job: this.job.value, active: true } )
+  }
+</app>
 ```
 
 ---
