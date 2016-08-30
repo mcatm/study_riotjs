@@ -8,7 +8,7 @@
 	- Javascript製MVCライブラリ（Backbone.jsやAngularJSなど）や、React.jsなどといったWEBアプリケーション作成ライブラリの一つ
 	- SPA（single page application）を作るのに適している
 - 「カスタムタグ」「ルーティング」「オブザーバブル」という三つの機能（と付属機能）しか持たない
-- 故に軽い（React.jsが44.32KB／Polymerが45.69KB／Riot.jsが9.38KB）
+	- 故に軽い（React.jsが44.32KB／Polymerが45.69KB／Riot.jsが9.38KB）
 - WEBコンポーネントの抽象化レイヤー（DOMに対するjQueryが目標）
 
 [サンプルまとめ](https://mcatm.github.io/study_riotjs/)
@@ -38,6 +38,7 @@ https://mcatm.github.io/study_riotjs/finish.html
 
 #### Vue.js
 
+- サーバーサイドレンダリングに対応してない
 - ビューとロジックが分離している！（良し悪し）
 - DOM直接操作する前提！
 
@@ -65,18 +66,19 @@ https://mcatm.github.io/study_riotjs/minimal.html
 
 <script type="riot/tag">
 <app>
-<h1>APPタグ</h1>
+<h1>APPタグ（何でもいい。ここはただのHTMLだから）</h1>
 </app>
 </script>
 
 <script>riot.mount('app')</script>
 ```
 
-- タグは自由に指定できる
+- タグの名前は自由に指定できる（ハイフン使うとか、W3Cの細かい規約はあるっぽい）
 - `riot/tag`という独自DSL（domain-specific language）を使用する
 	- 裏側で、riot.jsが、`riot/tag`をピュアなJSにコンパイルする
-- カスタムタグをマウントする
-- `riot.mount('*')`で、全てのカスタムタグをマウントすることが出来る
+	- サーバーサイドレンダリングも可能
+- カスタムタグは、JSでマウントして初めて処理される
+	- `riot.mount('*')`で、全てのカスタムタグをマウントすることが出来る
 
 #### コーディングポリシー
 
@@ -102,6 +104,7 @@ https://mcatm.github.io/study_riotjs/customtag-1.html
 ```
 
 - マウントする
+	- `riot.mount('カスタムタグ')`：カスタムタグをマウントする
 
 ```js
 riot.mount('app');
@@ -159,7 +162,7 @@ https://mcatm.github.io/study_riotjs/event-1.html
 
 - フォームを作る
 	- `onsubmit`：`<form>`が送信された時に走るイベントを定義
-		- 古式ゆかしいイベント記法ですが、riot.jsが上手いこと処理してくれます
+		- 古式ゆかしいイベント記法ですが、riot.jsが上手いこと処理してくれます（出力されるHTMLには、`onclick`属性は出力されていない）
 		- `preventDefault()`不要。riot.jsが勝手にやってくれる
 		- `onclick`とかも同様に書けます
 
@@ -185,7 +188,7 @@ https://mcatm.github.io/study_riotjs/event-1.html
   （省略）
 ```
 
-- `onsubmit`イベントの処理を定義する
+- onsubmitイベントの処理を定義する
 	- 配列の中身を変えると即座に表示に反映されることが確認できるはず
 
 ```
@@ -203,7 +206,7 @@ https://mcatm.github.io/study_riotjs/event-1.html
 https://mcatm.github.io/study_riotjs/event-2.html
 
 - フィルターを作成
-	- 各`<a>`タグに、`onclick`イベントを設定。`filter`メソッドを発火させる
+	- 各`<a>`タグに、onclickイベントを設定。`filter`メソッドを発火させる
 	- （ちょっと今回面倒くさいので、`data`属性を定義して、jQueryで利用しています。もっと良いやり方はあるはず）
 
 ```html
@@ -262,7 +265,7 @@ https://mcatm.github.io/study_riotjs/route-0.html
 
 #### 準備
 
-- 先ほどの実装を、`<app>`タグから`<members>`タグに変更
+- 先ほどのコードの`<app>`タグを、`<members>`タグに変更
 
 ```html
 <members>
@@ -318,7 +321,12 @@ riot.mount('nav')
 https://mcatm.github.io/study_riotjs/route-1.html
 
 - TOPページを作成
-    - `<script>`内に記述
+   - `<script>`内に記述
+   - `riot.route('ルート', callback)`：ルートに書かれた条件に一致した場合、callbackを発火
+	   - ルートの例：
+		   - `''`：http://localhost/
+		   - `'about`：http://localhost/about
+		   - `'about/*'`：http://localhost/about/xxxxx
 	- `riot.mount('app')`を下記に置き換え
 	- `riot.mount('app', 'top')`：`<app>`タグの位置に`<top>`タグをマウント
 
@@ -329,6 +337,7 @@ riot.route('', function() {
 ```
 
 - riot.routeを有効にする
+	- `riot.route.start(true)`：ルーティングがスタートする。自サイト内の全ての遷移がラップされる
   - リロードしてみると、トップページが表示されるはず
 
 ```js
