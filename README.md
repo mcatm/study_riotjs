@@ -28,8 +28,6 @@ https://mcatm.github.io/study_riotjs/finish.html
 
 ### 1-1. カスタムタグ
 
-https://mcatm.github.io/study_riotjs/customtag-1.html
-
 #### カスタムタグとは？
 
 - HTMLタグの拡張で、自由なタグを定義できる
@@ -40,6 +38,8 @@ https://mcatm.github.io/study_riotjs/customtag-1.html
 - CSSも書ける。カスタムタグ内にスコープされるので、完全に切り分けられる
 
 #### 最小のカスタムタグ実装
+
+https://mcatm.github.io/study_riotjs/minimal.html
 
 ```html
 <app/>
@@ -65,6 +65,8 @@ https://mcatm.github.io/study_riotjs/customtag-1.html
 	- 「あってもいいけど、公式では取り込まないよ」
 
 #### 実装
+
+https://mcatm.github.io/study_riotjs/customtag-1.html
 
 - 【注意】**/boilarplate.html**を複製してから、**index.html**に名称変更して作業してください。
 - HTMLにカスタムタグが二つ（`app`と`nav`）記述してあることを確認してください
