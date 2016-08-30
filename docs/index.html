@@ -24,13 +24,12 @@
       <app>
         <h1>Menu</h1>
         <ul>
-          <li each={ links } if={ active }>
+          <li each={ links }>
             <a href="{ url }">{ label }</a>
           </li>
         </ul>
 
-        var _this = this
-        _this.links = [
+        this.links = [
           { label: '完成形', url: 'https://mcatm.github.io/study_riotjs/finish.html' },
         ]
       </app>
