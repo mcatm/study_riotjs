@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>RiotJS Boilerplate</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/riot/2.3.18/riot+compiler.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  </head>
+  <body>
+    <!-- カスタムタグ -->
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-8">
+          <app></app>
+        </div>
+        <div class="col-xs-4">
+          <nav></nav>
+        </div>
+      </div>
+    </div>
+
+    <script type="riot/tag">
+      <members>
+        <h1>エンジニアチーム</h1>
+        <ul>
+          <li each={ members } if={ active }>
+            <h2>{ name }<small>（{ job }）</small></h2>
+          </li>
+        </ul>
+        <hr>
+        Filter: <a onclick="{ filter }">All</a> - <a onclick="{ filter }" data-job="Backend">Backend</a> - <a onclick="{ filter }" data-job="Frontend">Frontend</a>
+        <hr>
+        <form onsubmit="{ add_member }">
+          <div class="form-group">
+            <label>名前</label><br>
+            <input type="text" name="name" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>担当</label><br>
+            <select name="job" class="form-control">
+              <option value="Backend">Backend</option>
+              <option value="Frontend">Frontend</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-default">追加する</button>
+          </div>
+        </form>
+
+        var _this = this
+        _this.members = [
+          { name: '濱田', job: 'Backend', active: true },
+          { name: '青木', job: 'Frontend', active: true },
+          { name: '二階', job: 'Backend', active: true },
+          { name: '大石', job: 'Frontend', active: true },
+          { name: '宇根', job: 'Backend', active: true },
+          { name: '伊藤', job: 'Frontend', active: true },
+        ]
+
+        this.add_member = function(e) {
+          _this.members.push( { name: this.name.value, job: this.job.value, active: true } )
+        }
+
+        this.filter = function(e) {
+          var job = $(e.target).data('job')
+          _this.members.map(function(member) {
+            member.active = member.job == job || !job
+          })
+        }
+
+        <style scoped>
+        :scope { display: block; padding-bottom: 120px }
+        a { cursor: pointer }
+        </style>
+      </members>
+
+      <top>
+      <h1>TOP</h1>
+      <span class="loading">Loading...</span>
+      <div each={ companies }>
+        <h2><a href={ permalink } target="_blank">{ title }</a></h2>
+        <p>{ job }</p>
+      </div>
+
+      var _this = this
+          page = 1;
+
+      var page = page ? page : 1
+
+      $.ajax({
+        url: 'https://job.cinra.net/api/get/?pg=' + page,
+        dataType: 'json'
+      }).done(function(m) {
+        _this.companies = m.companies
+        _this.pagination = m.pagination
+        $('.loading').fadeOut(800, function(e) {
+          _this.update()
+        })
+      });
+
+      </top>
+
+      <nav>
+      <h2>Navigation</h2>
+      <ul class="list-group">
+        <li each={ navs } class="list-group-item"><a href="#{ uri }">{ label }</a></li>
+      </ul>
+
+      this.navs = [
+        {
+          label: 'Top',
+          uri: '',
+        },
+        {
+          label: 'Members',
+          uri: 'members',
+        }
+      ]
+      </nav>
+    </script>
+
+    <script>
+      riot.mount('nav')
+
+      riot.route('', function() {
+        riot.mount('app', 'top')
+      })
+
+      riot.route('members', function() {
+        riot.mount('app', 'members')
+      })
+
+      riot.route.start(true)
+    </script>
+  </body>
+</html>

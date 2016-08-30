@@ -11,6 +11,8 @@
 - 故に軽い（React.jsが44.32KB／Polymerが45.69KB／Riot.jsが9.38KB）
 - WEBコンポーネントの抽象化レイヤー（DOMに対するjQueryが目標）
 
+[サンプルまとめ](https://mcatm.github.io/study_riotjs/)
+
 ### 0-1. どんなものができるか
 
 https://mcatm.github.io/study_riotjs/finish.html
@@ -336,33 +338,18 @@ riot.route('members', function() {
 
 ## 3. オブザーバブル
 
-### 概要
+### 3-1. オブザーバブルとは
 
-### 実装
-
-- `<top>`を書き換え
-
-```
-<top>
-<h1>TOP</h1>
-<span class="loading"><span id="outerCircle"></span></span>
-<div each='{ companies }'>
-  <h2><a href="{ permalink }" target="_blank">{ title }</a></h2>
-  <p>{ job }</p>
-</div>
-
-var _this = this
-    page = 1;
-
-receiver.trigger('get', _this);
-
-</top>
-```
+#### 実装
 
 - `<script>`にオブザーバーを追加
+	- `riot.observable(this)`：インスタンスを監視する。変更があった際（`trigger()`）に、定義された処理を発火する
+	- `on('イベント名', callback)`：イベントの定義。コールバックはオブジェクトを受け取ることが出来る
+	- `update()`：イベントハンドラやマウント以外での要素の変更は、明示的に表示を更新してやる必要がある
 
 ```
-// Observable
+<script>
+（省略）
 
 function Receiver() {
 
@@ -390,7 +377,41 @@ this.on('get', function(_this) {
 
 // インスタンスを作る
 var receiver = new Receiver()
+
+</script>
 ```
+
+- `<top>`を書き換え
+	`receiver.trigger('イベント名', オブジェクト)`：イベントをトリガー。Observableであるreceiverインスタンスに、イベントを送信している
+	
+```
+<top>
+<h1>TOP</h1>
+<span class="loading">Loading...</span>
+<div each={ companies }>
+  <h2><a href={ permalink } target="_blank">{ title }</a></h2>
+  <p>{ job }</p>
+</div>
+
+var _this = this
+    page = 1;
+
+receiver.trigger('get', _this);
+
+</top>
+```
+
+### 4-2. アプリケーション設計
+
+- 上記、全くオブザーバブルを使わずに実装することも出来る
+- 設計が柔軟で自由
+	- 故に、設計者のセンスが問われる
+
+---
+
+## 5. まとめ
+
+
 
 ---
 
