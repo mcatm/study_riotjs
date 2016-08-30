@@ -24,18 +24,19 @@
       <app>
         <h1>エンジニアチーム</h1>
         <ul>
-          <li each='{ members }'>
+          <li each={ members } if={ active }>
             <h2>{ name }<small>（{ job }）</small></h2>
           </li>
         </ul>
 
-        this.members = [
-          { name: '濱田', job: 'Backend' },
-          { name: '青木', job: 'Frontend' },
-          { name: '二階', job: 'Backend' },
-          { name: '大石', job: 'Frontend' },
-          { name: '宇根', job: 'Backend' },
-          { name: '伊藤', job: 'Frontend' },
+        var _this = this
+        _this.members = [
+          { name: '濱田', job: 'Backend', active: true },
+          { name: '青木', job: 'Frontend', active: true },
+          { name: '二階', job: 'Backend', active: true },
+          { name: '大石', job: 'Frontend', active: true },
+          { name: '宇根', job: 'Backend', active: true },
+          { name: '伊藤', job: 'Frontend', active: true },
         ]
       </app>
     </script>

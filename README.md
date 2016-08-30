@@ -28,6 +28,8 @@ https://mcatm.github.io/study_riotjs/finish.html
 
 ### 1-1. カスタムタグ
 
+https://mcatm.github.io/study_riotjs/customtag-1.html
+
 #### カスタムタグとは？
 
 - HTMLタグの拡張で、自由なタグを定義できる
@@ -88,16 +90,19 @@ riot.mount('app');
 
 ### 1-2. ループとデータ構造
 
+https://mcatm.github.io/study_riotjs/loop-1.html
+
 #### 実装
 
 - ループを作成する
 	- `each`: 配列を与えるとループする。子要素の中で、配列のプロパティにアクセスできる
+	- `if`: 値が負だったら、表示しない
 
 ```html
 <app>
   <h1>エンジニアチーム</h1>
   <ul>
-    <li each='{ members }'>
+    <li each={ members } if={ active }>
       <h2>{ name }<small>（{ job }）</small></h2>
     </li>
   </ul>
@@ -113,13 +118,14 @@ riot.mount('app');
     （中略）
   </ul>
   
-  this.members = [
-		{ name: '濱田', job: 'Backend' },
-		{ name: '青木', job: 'Frontend' },
-		{ name: '二階', job: 'Backend' },
-		{ name: '大石', job: 'Frontend' },
-		{ name: '宇根', job: 'Backend' },
-		{ name: '伊藤', job: 'Frontend' },
+  var _this = this
+  _this.members = [
+		{ name: '濱田', job: 'Backend', active: true },
+		{ name: '青木', job: 'Frontend', active: true },
+		{ name: '二階', job: 'Backend', active: true },
+		{ name: '大石', job: 'Frontend', active: true },
+		{ name: '宇根', job: 'Backend', active: true },
+		{ name: '伊藤', job: 'Frontend', active: true },
 	]
 </app>
 ```
@@ -127,6 +133,8 @@ riot.mount('app');
 - ループが確認できるはず
 
 ### 1-3. イベントハンドラ
+
+https://mcatm.github.io/study_riotjs/event-1.html
 
 - フォームを作る
 	- `onsubmit`：`<form>`が送信された時に走るイベントを定義
@@ -157,14 +165,65 @@ riot.mount('app');
 ```
 
 - `onsubmit`イベントの処理を定義する
+	- 配列の中身を変えると即座に表示に反映されることが確認できるはず
 
 ```
 <app>
   （中略）
 
   this.add_member = function(e) {
-    this.members.push( { name: this.name.value, job: this.job.value, active: true } )
+    _this.members.push( { name: this.name.value, job: this.job.value, active: true } )
   }
+</app>
+```
+
+#### 1-3-2. 変数操作
+
+- フィルターを作成
+	- 各`<a>`タグに、`onclick`イベントを設定。`filter`メソッドを発火させる
+	- （ちょっと今回面倒くさいので、`data`属性を定義して、jQueryで利用しています。もっと良いやり方はあるはず）
+
+```html
+<app>
+<h1>エンジニアチーム</h1>
+<ul>
+  （中略）
+</ul>
+<hr>
+Filter: <a onclick="{ filter }">All</a> - <a onclick="{ filter }" data-job="Backend">Backend</a> - <a onclick="{ filter }" data-job="Frontend">Frontend</a>
+（省略）
+</app>
+```
+
+- フィルターの機能を定義
+	- フィルターでやってることは、単に`this.members`の内容を変えているだけ
+
+```js
+<app>
+（省略）
+
+this.filter = function(e) {
+  var job = $(e.target).data('job')
+  _this.members.map(function(member) {
+    member.active = member.job == job || !job
+  })
+}
+</app>
+```
+
+- CSSを定義：aタグはポインターにしたいよね
+	- `:scope`：このタグ自身
+	- `a`も、`app a`を示していることが確認できるはず
+
+```html
+<app>
+（省略）
+
+<style scoped>
+:scope { display: block; padding-bottom: 120px }
+a { cursor: pointer }
+</style>
+
 </app>
 ```
 
@@ -181,86 +240,25 @@ riot.mount('app');
 ```html
 <members>
 <h1>エンジニアチーム</h1>
-<ul>
-  <li each={ members } if={ active }>
-    <h2>{ name }<small>（{ job }）</small></h2>
-  </li>
-</ul>
-<hr>
-Filter: <a onclick="{ filter }">All</a> - <a onclick="{ filter }" data-job="Backend">Backend</a> - <a onclick="{ filter }" data-job="Frontend">Frontend</a>
-<hr>
-<form onsubmit="{ add_member }">
-  <div class="form-group">
-    <label>名前</label><br>
-    <input type="text" name="name" class="form-control">
-  </div>
-  <div class="form-group">
-    <label>担当</label><br>
-    <select name="job" class="form-control">
-      <option value="Backend">Backend</option>
-      <option value="Frontend">Frontend</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <button class="btn btn-default">追加する</button>
-  </div>
-</form>
-
-var _this = this
-
-_this.members = [
-  { name: '濱田', job: 'Backend', active: true },
-  { name: '青木', job: 'Frontend', active: true },
-  { name: '二階', job: 'Backend', active: true },
-  { name: '大石', job: 'Frontend', active: true },
-  { name: '宇根', job: 'Backend', active: true },
-  { name: '伊藤', job: 'Frontend', active: true },
-]
-
-this.add_member = function(e) {
-  _this.members.push( {
-    name: this.name.value,
-    job:  this.job.value,
-    active: true,
-  } )
-}
-
-this.filter = function(e) {
-  var job = $(e.target).data('job')
-  _this.members.map(function(member) {
-    member.active = member.job == job || !job
-  })
-}
-
+（省略）
 </members>
 ```
 
 - `<top>`タグを追加
 
 ```html
+<app>（省略）</app>
 <top>
   <h1>中身はなんでも良い、とりあえず今は</h1>
 </top>
 ```
 
-- ナビゲーションを追加
-
-```html
-<div class="container">
-  <div class="row">
-    <div class="col-xs-8">
-      <app></app>
-    </div>
-    <div class="col-xs-4">
-      <nav></nav>
-    </div>
-  </div>
-</div>
-```
-
-- `<nav>`タグを追加
+- `<nav>`タグを定義
 
 ```js
+<app>（省略）</app>
+<top>（省略）</top>
+
 <nav>
 <h2>Navigation</h2>
 <ul class="list-group">
@@ -280,13 +278,24 @@ this.navs = [
 </nav>
 ```
 
+- `<nav>`タグをマウント
+
+```js
+riot.mount('nav')
+```
+
+- `<app>`タグが定義されていないので、ナビしか表示されなくなったはず
+
 ### 実装
 
 - TOPページを作成
+    - `<script>`内に記述
+	- `riot.mount('app')`を下記に置き換え
+	- `riot.mount('app', 'top')`：`<app>`タグの位置に`<top>`タグをマウント
 
 ```js
 riot.route('', function() {
-  riot.mount('app', 'top') # <app>タグの位置に<top>タグをマウント
+  riot.mount('app', 'top')
 })
 ```
 
@@ -294,10 +303,12 @@ riot.route('', function() {
   - リロードしてみると、トップページが表示されるはず
 
 ```js
+riot.route(（省略）)
+
 riot.route.start(true)
 ```
 
-- Membersページを追加
+- Membersページを`<script>`内に追加
 
 ```js
 riot.route('members', function() {
@@ -306,8 +317,12 @@ riot.route('members', function() {
 ```
 
 #### 確認
+
 - `#members`に遷移すると、先ほどのエンジニアチームのメンバー表が表示される
 - `#`に遷移すると、先ほどのトップページが表示される
+- 戻る／進むが正常に機能する
+
+---
 
 ## 3. オブザーバブル
 

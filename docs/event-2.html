@@ -29,6 +29,8 @@
           </li>
         </ul>
         <hr>
+        Filter: <a onclick="{ filter }">All</a> - <a onclick="{ filter }" data-job="Backend">Backend</a> - <a onclick="{ filter }" data-job="Frontend">Frontend</a>
+        <hr>
         <form onsubmit="{ add_member }">
           <div class="form-group">
             <label>名前</label><br>
@@ -59,6 +61,18 @@
         this.add_member = function(e) {
           _this.members.push( { name: this.name.value, job: this.job.value, active: true } )
         }
+
+        this.filter = function(e) {
+          var job = $(e.target).data('job')
+          _this.members.map(function(member) {
+            member.active = member.job == job || !job
+          })
+        }
+
+        <style scoped>
+        :scope { display: block; padding-bottom: 120px }
+        a { cursor: pointer }
+        </style>
       </app>
     </script>
 
