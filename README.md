@@ -179,6 +179,8 @@ https://mcatm.github.io/study_riotjs/event-1.html
 
 #### 1-3-2. 変数操作
 
+https://mcatm.github.io/study_riotjs/event-2.html
+
 - フィルターを作成
 	- 各`<a>`タグに、`onclick`イベントを設定。`filter`メソッドを発火させる
 	- （ちょっと今回面倒くさいので、`data`属性を定義して、jQueryで利用しています。もっと良いやり方はあるはず）
@@ -231,7 +233,11 @@ a { cursor: pointer }
 
 ## 2. ルーティング
 
-### 2-1. ルートの設定
+### 2-1. ルーティングとは
+
+### 2-2. ルートの設定
+
+https://mcatm.github.io/study_riotjs/route-0.html
 
 #### 準備
 
@@ -287,6 +293,8 @@ riot.mount('nav')
 - `<app>`タグが定義されていないので、ナビしか表示されなくなったはず
 
 ### 実装
+
+https://mcatm.github.io/study_riotjs/route-1.html
 
 - TOPページを作成
     - `<script>`内に記述

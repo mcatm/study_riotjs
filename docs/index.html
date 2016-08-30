@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>RiotJS Boilerplate</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/riot/2.3.18/riot+compiler.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  </head>
+  <body>
+    <!-- カスタムタグ -->
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-8">
+          <app></app>
+        </div>
+        <div class="col-xs-4">
+          <nav></nav>
+        </div>
+      </div>
+    </div>
+
+    <script type="riot/tag">
+      <app>
+        <h1>Menu</h1>
+        <ul>
+          <li each={ links } if={ active }>
+            <a href="{ url }">{ label }</a>
+          </li>
+        </ul>
+
+        var _this = this
+        _this.links = [
+          { label: '完成形', url: 'https://mcatm.github.io/study_riotjs/finish.html' },
+        ]
+      </app>
+    </script>
+
+    <script>
+      riot.mount('app');
+    </script>
+  </body>
+</html>
