@@ -7,6 +7,7 @@
 - Javascript製の**UIライブラリ**
 	- Javascript製MVCライブラリ（Backbone.jsやAngularJSなど）や、React.jsなどといったWEBアプリケーション作成ライブラリの一つ
 	- SPA（single page application）を作るのに適している
+	- 「React.jsがUIにフォーカスしてるのは賢い」と認めております
 - 「カスタムタグ」「ルーティング」「オブザーバブル」という三つの機能（と付属機能）しか持たない
 	- 故に軽い（React.jsが44.32KB／Polymerが45.69KB／Riot.jsが9.38KB）
 - WEBコンポーネントの抽象化レイヤー（DOMに対するjQueryが目標）
@@ -25,6 +26,8 @@ https://mcatm.github.io/study_riotjs/finish.html
 - 戻る／進むボタンが機能していることを確認できる
 
 ### 0-2. 他のフレームワークとの違い
+
+参考：[RiotをReact・Polymerと比較する · Riot\.js](http://riotjs.com/ja/compare/)
 
 #### React.js
 
@@ -50,6 +53,7 @@ https://mcatm.github.io/study_riotjs/finish.html
 
 #### カスタムタグとは？
 
+- 参考：[カスタムタグ · Riot\.js](http://riotjs.com/ja/api/)
 - HTMLタグの拡張で、自由なタグを定義できる
 	- アプリケーションのビューにあたる
 	- テンプレートとして実装することも可能
@@ -58,8 +62,6 @@ https://mcatm.github.io/study_riotjs/finish.html
 - CSSも書ける。カスタムタグ内にスコープされるので、完全に切り分けられる
 
 #### 最小のカスタムタグ実装
-
-https://mcatm.github.io/study_riotjs/minimal.html
 
 ```html
 <app/>
@@ -73,12 +75,33 @@ https://mcatm.github.io/study_riotjs/minimal.html
 <script>riot.mount('app')</script>
 ```
 
-- タグの名前は自由に指定できる（ハイフン使うとか、W3Cの細かい規約はあるっぽい）
+- タグの名前は自由に指定できる
+   -（ハイフン使うとか、W3Cの細かい規約はあるっぽい）
 - `riot/tag`という独自DSL（domain-specific language）を使用する
 	- 裏側で、riot.jsが、`riot/tag`をピュアなJSにコンパイルする
+	- プリレンダリング可能（`riot/tag` → `text/javascript`）
 	- サーバーサイドレンダリングも可能
-- カスタムタグは、JSでマウントして初めて処理される
+- `riot:mount()`：カスタムタグは、JSでマウントして初めて処理される
 	- `riot.mount('*')`で、全てのカスタムタグをマウントすることが出来る
+
+##### ちなみに…
+
+- これをReactで書くと…
+
+```js
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+class App extends React.Component {
+    render() {
+        return (
+            <h1>APPタグ（何でもいい。ここはただのHTMLだから）</h1>
+        );
+    }
+}
+
+ReactDOM.render(<App/>, mountNode);
+```
 
 #### コーディングポリシー
 
@@ -116,6 +139,8 @@ riot.mount('app');
 
 https://mcatm.github.io/study_riotjs/loop-1.html
 
+- 参考：[カスタムタグ · Riot\.js](http://riotjs.com/ja/guide/#section-23)
+
 #### 実装
 
 - ループを作成する
@@ -135,6 +160,7 @@ https://mcatm.github.io/study_riotjs/loop-1.html
 
 - データを作成する
 - `this`がカスタムタグ自身を示すスコープ
+    - ここでは後々再利用するために、別変数（`_this`）に格納しています
 
 ```json
   <h1>エンジニアチーム</h1>
@@ -160,6 +186,7 @@ https://mcatm.github.io/study_riotjs/loop-1.html
 
 https://mcatm.github.io/study_riotjs/event-1.html
 
+- 参考：[カスタムタグ · Riot\.js](http://riotjs.com/ja/guide/#section-20)
 - フォームを作る
 	- `onsubmit`：`<form>`が送信された時に走るイベントを定義
 		- 古式ゆかしいイベント記法ですが、riot.jsが上手いこと処理してくれます（出力されるHTMLには、`onclick`属性は出力されていない）
@@ -201,7 +228,7 @@ https://mcatm.github.io/study_riotjs/event-1.html
 </app>
 ```
 
-#### 1-3-2. 変数操作
+#### 1-3-1. 変数操作
 
 https://mcatm.github.io/study_riotjs/event-2.html
 
@@ -222,7 +249,7 @@ Filter: <a onclick="{ filter }">All</a> - <a onclick="{ filter }" data-job="Back
 ```
 
 - フィルターの機能を定義
-	- フィルターでやってることは、単に`this.members`の内容を変えているだけ
+	- フィルターでやってることは、単に`this.members`の内容を変えているだけ（選択しているJobと異なる場合に、`active: false`を設定する）
 
 ```js
 <app>
@@ -258,6 +285,15 @@ a { cursor: pointer }
 ## 2. ルーティング
 
 ### 2-1. ルーティングとは
+
+- HistoryAPIを利用したルーティングを実現できる
+    - 代替ライブラリとしては、`page.js`などが挙げられる
+- Javascript MVCや、ReactJSも、ルーティングの機構は持っていて、より複雑
+    - riot.jsのルーティングは非常に単純
+    - そこがネックになる可能性はあるが、Nodeモジュールで代替可能
+- `#`を使ったハッシュリンクがデフォルトだが、適切にサーバー設定することで、`/`をベースにした通常の遷移もすべてラップできる
+- 遷移する毎にイベントが発生するので、遷移中のアニメーションなどが実装しやすい
+- 参考：[ルータ · Riot\.js](http://riotjs.com/ja/api/route/)
 
 ### 2-2. ルートの設定
 
@@ -316,7 +352,7 @@ riot.mount('nav')
 
 - `<app>`タグが定義されていないので、ナビしか表示されなくなったはず
 
-### 実装
+#### 実装
 
 https://mcatm.github.io/study_riotjs/route-1.html
 
@@ -365,6 +401,16 @@ riot.route('members', function() {
 ## 3. オブザーバブル
 
 ### 3-1. オブザーバブルとは
+
+#### 概要
+
+> Observableはイベントを送ったり受け取ったりするための汎用的なツールです
+
+- イベントを設定・送信・監視・受信するためのツール
+- カスタムタグの中（`riot/tag`）にでも、外（`text/javascript`）にでも、好きなように置ける
+    - アプリケーション全体を監視するようなObservableインスタンスを定義し、タグの動きを監視させることが可能
+    - GAのキックとか、SNSボタンの初期化とか、非同期遷移でよくハマるポイントは、これを使うことで解消されますね
+- 参考：[オブザーバブル · Riot\.js](http://riotjs.com/ja/api/observable/)
 
 #### 実装
 
@@ -427,17 +473,30 @@ receiver.trigger('get', _this);
 </top>
 ```
 
-### 4-2. アプリケーション設計
+### 3-2. アプリケーション設計
 
-- 上記、全くオブザーバブルを使わずに実装することも出来る
+- 上記、全くオブザーバブルを使わずに実装することも出来る（[サンプル](https://mcatm.github.io/study_riotjs/observable-2.html)）
 - 設計が柔軟で自由
 	- 故に、設計者のセンスが問われる
 
 ---
 
-## 5. まとめ
+## 4. まとめ
 
-
+- すげー使いやすい
+    - 学習コストが極端に低い
+    - 変数のスコープを気にする必要があまりないので、設計の自由度が高い
+- 設計にセンスが必要
+    - チームで制作する場合、各々のエンジニアが設計しちゃったり、設計者の意図を無視した実装をすると、プロジェクトが簡単に破綻する（予感）
+    - ReactJSで言うところの「Flux」のような仕組み（考え方）が必要になってくるかも
+        - Flux：「データフローを一方通行にする」とか「データを扱うモデルを作る」とか、システムを設計するパターンみたいなもん（という理解）
+            - MVC、みたいなもんですね
+        - [jimsparkman/RiotControl: Event Controller / Dispatcher For RiotJS, Inspired By Flux](https://github.com/jimsparkman/RiotControl)
+- 既存のサイトの置き換えが楽
+    - 「システムはかっちり作ってあるけど、ガワを変えたい…」みたいな要望に応えやすい
+    - APIとフロントの切り分けは、今後大いに推進していくべきだろう
+        - とは思いつつ、コンテンツ配信は別サーバー立てないと、とか、プレビューどうする？とか、解決しなければならない問題はある
+        - Docker！
 
 ---
 
@@ -445,3 +504,4 @@ receiver.trigger('get', _this);
 
 - [Riot\.js — A React\-like user interface micro\-library · Riot\.js](http://riotjs.com/ja/)
 - [Riot\.js 触ってみたメモとサンプル \| WebTecNote](http://tenderfeel.xsrv.jp/javascript/2220/)
+- [Riotjsのいいところ \- Qiita](http://qiita.com/jgs/items/afa7bca6d4d88812b7e4)
