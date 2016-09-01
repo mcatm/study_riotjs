@@ -11,6 +11,7 @@
 - 「カスタムタグ」「ルーティング」「オブザーバブル」という三つの機能（と付属機能）しか持たない
 	- 故に軽い（React.jsが44.32KB／Polymerが45.69KB／Riot.jsが9.38KB）
 - WEBコンポーネントの抽象化レイヤー（DOMに対するjQueryが目標）
+- ShadowDOM使ってる
 
 [サンプルまとめ](https://mcatm.github.io/study_riotjs/)
 
